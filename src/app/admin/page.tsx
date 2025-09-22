@@ -1,13 +1,24 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { StatCard } from "@/components/StatCard";
 import { columns } from "@/components/table/columns";
 import { DataTable } from "@/components/table/DataTable";
 import { getRecentAppointmentList } from "@/lib/actions/appointment.actions";
+import { StatCard } from "@/StatCard";
 
 const AdminPage = async () => {
-  const appointments = await getRecentAppointmentList();
+  let appointments;
+  try {
+    appointments = await getRecentAppointmentList();
+  } catch (error) {
+    console.error("Failed to fetch appointments:", error);
+    appointments = {
+      scheduledCount: 0,
+      pendingCount: 0,
+      cancelledCount: 0,
+      documents: [],
+    };
+  }
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col space-y-14">
@@ -36,25 +47,25 @@ const AdminPage = async () => {
         <section className="admin-stat">
           <StatCard
             type="appointments"
-            count={appointments.scheduledCount}
+            count={appointments?.scheduledCount || 0}
             label="Scheduled appointments"
             icon={"/assets/icons/appointments.svg"}
           />
           <StatCard
             type="pending"
-            count={appointments.pendingCount}
+            count={appointments?.pendingCount || 0}
             label="Pending appointments"
             icon={"/assets/icons/pending.svg"}
           />
           <StatCard
             type="cancelled"
-            count={appointments.cancelledCount}
+            count={appointments?.cancelledCount || 0}
             label="Cancelled appointments"
             icon={"/assets/icons/cancelled.svg"}
           />
         </section>
 
-        <DataTable columns={columns} data={appointments.documents} />
+        <DataTable columns={columns} data={appointments?.documents || []} />
       </main>
     </div>
   );

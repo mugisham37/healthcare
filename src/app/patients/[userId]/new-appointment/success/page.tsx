@@ -11,10 +11,21 @@ const RequestSuccess = async ({
   params: { userId },
 }: SearchParamProps) => {
   const appointmentId = (searchParams?.appointmentId as string) || "";
-  const appointment = await getAppointment(appointmentId);
+  let appointment;
+
+  try {
+    appointment = await getAppointment(appointmentId);
+  } catch (error) {
+    console.error("Failed to fetch appointment:", error);
+    appointment = {
+      primaryPhysician: "",
+      schedule: new Date(),
+      note: "",
+    };
+  }
 
   const doctor = Doctors.find(
-    (doctor) => doctor.name === appointment.primaryPhysician
+    (doctor) => doctor.name === appointment?.primaryPhysician
   );
 
   return (
@@ -48,13 +59,13 @@ const RequestSuccess = async ({
           <p>Requested appointment details: </p>
           <div className="flex items-center gap-3">
             <Image
-              src={doctor?.image!}
+              src={doctor?.image || "/assets/images/dr-green.png"}
               alt="doctor"
               width={100}
               height={100}
               className="size-6"
             />
-            <p className="whitespace-nowrap">Dr. {doctor?.name}</p>
+            <p className="whitespace-nowrap">Dr. {doctor?.name || "Doctor"}</p>
           </div>
           <div className="flex gap-2">
             <Image
@@ -63,7 +74,12 @@ const RequestSuccess = async ({
               width={24}
               alt="calendar"
             />
-            <p> {formatDateTime(appointment.schedule).dateTime}</p>
+            <p>
+              {" "}
+              {appointment?.schedule
+                ? formatDateTime(appointment.schedule).dateTime
+                : "Schedule TBD"}
+            </p>
           </div>
         </section>
 

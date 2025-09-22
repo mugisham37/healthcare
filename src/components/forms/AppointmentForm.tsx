@@ -18,8 +18,8 @@ import { Appointment } from "@/types/appwrite.types";
 
 import "react-datepicker/dist/react-datepicker.css";
 
-import CustomFormField, { FormFieldType } from "../CustomFormField";
-import SubmitButton from "../SubmitButton";
+import CustomFormField, { FormFieldType } from "@/CustomFormField";
+import SubmitButton from "@/SubmitButton";
 import { Form } from "../ui/form";
 
 export const AppointmentForm = ({
@@ -94,6 +94,7 @@ export const AppointmentForm = ({
         const appointmentToUpdate = {
           userId,
           appointmentId: appointment?.$id!,
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           appointment: {
             primaryPhysician: values.primaryPhysician,
             schedule: new Date(values.schedule),
